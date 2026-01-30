@@ -9,11 +9,24 @@ public class GameManager : MonoBehaviour
     [SerializeField] bool _isPlay;
     public bool isPlay { get => _isPlay; }
 
+    [SerializeField] bool _isClear;
+    public bool isClear { 
+        set => _isClear = value; 
+        get => _isClear; }
+
     [SerializeField] Player _player;
     public Player player { get => _player; }
 
+    [SerializeField] float _maxDistance;  // 목표 거리
+    public float maxDistance { get => _maxDistance; }
+
+    [SerializeField] float _distance;  // 현재 거리
+    public float distance { get => _distance; }
+
     [SerializeField] float _time;
     public float time { get => _time; }
+
+    [SerializeField] double _clearPrice = 10000;
 
     [SerializeField] double _totalPrice;
     public double totalPrice { get => _totalPrice; }
@@ -21,6 +34,11 @@ public class GameManager : MonoBehaviour
     public void addPrice(double price) { _totalPrice += price; }
 
     [SerializeField] private GameObject _exitBackground;
+
+
+    [SerializeField] private string[] clearText;
+    [SerializeField] private string[] failText;
+
 
     private void Awake()
     {
@@ -37,19 +55,33 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_isPlay) {
-            if (_time < 1)
+
+        if (_isClear && _isPlay )
+        {
+            _time = 0;
+            _isPlay = false;
+            UpdateTimerUI(time);
+            gameClear();
+        }
+
+        else {
+            if (_isPlay)
             {
-                _time = 0;
-                _isPlay = false;
-                UpdateTimerUI(time);
-                _exitBackground.gameObject.SetActive(true);
-                StartCoroutine(exitCoroutine());
+                if (_time < 1)
+                {
+                    _time = 0;
+                    _isPlay = false;
+                    UpdateTimerUI(time);
+                    Debug.Log("fail");
+                    ResultGame();
+                }
+                else
+                {
+                    _time -= Time.deltaTime;
+                    UpdateTimerUI(time);
+                }
             }
-            else {
-                _time -= Time.deltaTime;
-                UpdateTimerUI(time);
-            }
+
         }
 
     }
@@ -62,6 +94,11 @@ public class GameManager : MonoBehaviour
 
         UIManager.instance.setText(UIManager.instance.timerUI, "Time : " + $"{minutes:00}:{seconds:00}");
 
+    }
+
+    public void gameClear() {
+        _exitBackground.gameObject.SetActive(true);
+        StartCoroutine(exitCoroutine());
     }
 
     IEnumerator exitCoroutine()
@@ -119,8 +156,16 @@ public class GameManager : MonoBehaviour
     public void ResultGame() { 
         UIManager.instance.ResultUI.gameObject.SetActive( true );
 
-        UIManager.instance.ResultTextUI.text = "Game Clear";
-    
+        string result = UIManager.instance.ResultTextUI.text;
+
+        if (isClear == true && totalPrice >= _clearPrice)
+            result = "게임 클리어\n\n" + clearText[UnityEngine.Random.Range(0, clearText.Length)];
+        else {
+            result = "게임 오버\n\n" + failText[UnityEngine.Random.Range(0, failText.Length)];
+        }
+
+        UIManager.instance.ResultTextUI.text = result.Replace("\\n", "\n");
+
     }
 
 }

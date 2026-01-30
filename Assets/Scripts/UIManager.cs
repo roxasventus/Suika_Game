@@ -12,6 +12,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text _timerUI;
     public TMP_Text timerUI { get => _timerUI; }
 
+    [SerializeField] private Slider _acceleratorUI;
+
+    [SerializeField] private Slider _distanceUI;
+
     [SerializeField] private GameObject _ResultUI;
     public GameObject ResultUI { get => _ResultUI; }
 
@@ -33,6 +37,14 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        float maxAccelerateGauge = GameManager.instance.player.maxAccelerateGauge;
+        float accelerateGauge = GameManager.instance.player.accelerateGauge;
+        _acceleratorUI.value = accelerateGauge/maxAccelerateGauge;
+
+        float maxDistance = GameManager.instance.maxDistance;
+        _distanceUI.value = GameManager.instance.player.transform.position.y / maxDistance;
+        if (GameManager.instance.player.transform.position.y >= maxDistance) {
+            GameManager.instance.isClear = true;
+        }
     }
 }
