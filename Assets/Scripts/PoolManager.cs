@@ -19,6 +19,8 @@ public class PoolManager : MonoBehaviour
 
     private void Awake()
     {
+        Random.InitState(System.DateTime.Now.Millisecond);
+
         pools = new List<GameObject>[prefabs.Length];
 
         for (int index = 0; index < pools.Length; index++)

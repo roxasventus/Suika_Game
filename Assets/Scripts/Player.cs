@@ -23,8 +23,14 @@ public class Player : MonoBehaviour
     [SerializeField] float accelerateUse = 25f;      // 초당 소비량
     [SerializeField] float accelerateRegen = 15f;   // 초당 회복량
     [SerializeField] float overheatCooldown = 10f; // 0 도달 시 회복 정지 시간
-    [SerializeField] bool isAccelerating = false;  // 가속 중인가?
-    [SerializeField] bool isOverhearting = false;  // 과열 중인가?
+    [SerializeField] bool _isAccelerating = false;  // 가속 중인가?
+    public bool isAccelerating { 
+        set => _isAccelerating = value;
+        get => _isAccelerating; }
+    [SerializeField] bool _isOverhearting = false;  // 과열 중인가?
+    public bool isOverhearting { 
+        set => _isOverhearting = value;
+        get => _isOverhearting; }
 
     float targetSpeed;
     float currentSpeed;
@@ -152,6 +158,8 @@ public class Player : MonoBehaviour
     IEnumerator overHeatingCooltimeCoroutine()
     {
         isOverhearting = true;
+        AudioManager.instance.SetSFX("beep_warning");
+        UIManager.instance.overheatText.gameObject.SetActive(true);
 
         // 여기서도 안전하게 강제 해제
         isAccelerating = false;
@@ -160,6 +168,7 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(overheatCooldown);
 
         isOverhearting = false;
+        UIManager.instance.overheatText.gameObject.SetActive(false);
 
         // (선택) 쿨타임 끝나면 최소 게이지 조금 채워주기
         // accelerateGauge = Mathf.Max(accelerateGauge, 5f);

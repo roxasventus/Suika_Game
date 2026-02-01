@@ -50,7 +50,7 @@ public class Object : MonoBehaviour
         collisionObject.setLock(true);
 
 
-        if (PoolManager.instance.prefabs.Length > getLevel + 1 && 5 > getLevel + 1) { 
+        if (PoolManager.instance.prefabs.Length > getLevel + 1 && 5 >= getLevel + 1) { 
             PoolManager.instance.Get(getLevel+1, transform);
             AudioManager.instance.SetSFX("combine");
             gameObject.SetActive(false);
@@ -81,8 +81,7 @@ public class Object : MonoBehaviour
 
         bool isOut =
             vp.x < 0 || vp.x > 1 ||
-            vp.y < 0 || 
-            vp.z < 0; // 카메라 뒤쪽
+            vp.y < 0 ; 
 
         if (isOut && boxIn == false)
         {

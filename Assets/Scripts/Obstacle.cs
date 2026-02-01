@@ -1,10 +1,15 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Obstacle : MonoBehaviour
 {
     [SerializeField] private int _level;
     public int getLevel => _level;
+
+    [SerializeField] private AudioSource _audioSource;
+    public AudioSource audioSource{ get => _audioSource; }
 
     // 상자 안에 있느냐??
     [SerializeField] private bool _boxIn;
@@ -27,6 +32,8 @@ public class Obstacle : MonoBehaviour
 
     private Coroutine _explodeRoutine;
 
+    [SerializeField] private GameObject warningUI;
+
     // Update is called once per frame
     void Update()
     {
@@ -41,7 +48,49 @@ public class Obstacle : MonoBehaviour
         {
             gameObject.SetActive(false);
         }
+
+        if (vp.y > 1 && isExploding == false)
+        {
+
+            if (!warningUI.activeSelf)
+            {
+                AudioManager.instance.SetSFX(audioSource, "warning");
+                warningUI.SetActive(true);
+            }
+        }
+        else {
+
+            if (warningUI.activeSelf)
+            {
+                warningUI.SetActive(false);
+            }
+
+        }
     }
+
+    void LateUpdate()
+    {
+        // 다이너마이트 경고 ui 위치 배치
+        if (_level == 0 && warningUI.activeSelf) {
+            Vector3 dynPos = gameObject.transform.position;
+            Camera cam = UIManager.instance.main_camera;
+            float topOffset = 0.5f; // 화면 상단에서 살짝 아래
+
+            // 화면 최상단 (Viewport Y = 1)
+            Vector3 topWorldPos = cam.ViewportToWorldPoint(
+                new Vector3(0.5f, 1f, cam.nearClipPlane)
+            );
+
+            warningUI.transform.position = new Vector3(
+                dynPos.x,
+                topWorldPos.y - topOffset,
+                transform.position.z
+            );
+
+            warningUI.transform.rotation = Quaternion.identity;
+        }
+    }
+
     private void OnEnable()
     {
         _boxIn = false;
@@ -82,7 +131,7 @@ public class Obstacle : MonoBehaviour
 
     private IEnumerator ExplodeCoroutine()
     {
-        AudioManager.instance.SetSFX("timer");
+        AudioManager.instance.SetSFX(audioSource, "timer");
         yield return new WaitForSeconds(_timer);
 
         Vector2 center = transform.position;
@@ -116,7 +165,7 @@ public class Obstacle : MonoBehaviour
             rb.AddForce(launchDir * force, ForceMode2D.Impulse);
         }
         if(gameObject.activeSelf)
-            AudioManager.instance.SetSFX("explosion");
+            AudioManager.instance.SetSFX(audioSource, "explosion");
         gameObject.transform.GetChild(0).gameObject.SetActive(false);
         gameObject.transform.GetChild(1).gameObject.SetActive(true);
 

@@ -104,6 +104,12 @@ public class AudioManager : MonoBehaviour
         SFXSource.Play();
     }
 
+    public void SetSFX(AudioSource audioSource,  string name)
+    {
+        audioSource.clip = GetClipByName(SFX_Clips, name);
+        audioSource.Play();
+    }
+
 
     public AudioClip GetClipByName(AudioClip[] clips, string clipName)
     {

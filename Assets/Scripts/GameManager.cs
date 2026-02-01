@@ -153,19 +153,35 @@ public class GameManager : MonoBehaviour
         #endif
     }
 
-    public void ResultGame() { 
-        UIManager.instance.ResultUI.gameObject.SetActive( true );
+    public void ResultGame()
+    {
+        UIManager.instance.ResultUI.gameObject.SetActive(true);
 
-        string result = UIManager.instance.ResultTextUI.text;
+        string result;
 
-        if (isClear == true && totalPrice >= _clearPrice)
-            result = "게임 클리어\n\n" + clearText[UnityEngine.Random.Range(0, clearText.Length)];
-        else {
-            result = "게임 오버\n\n" + failText[UnityEngine.Random.Range(0, failText.Length)];
+        if (isClear && totalPrice >= _clearPrice)
+        {
+            string title =
+                "<size=160%><color=#FFD700>게임 클리어</color></size>";
+
+            string body =
+                clearText[UnityEngine.Random.Range(0, clearText.Length)];
+
+            result = $"{title}\n\n{body}";
+        }
+        else
+        {
+            string title =
+                "<size=160%><color=#FF5555>게임 오버</color></size>";
+
+            string body =
+                failText[UnityEngine.Random.Range(0, failText.Length)];
+
+            result = $"{title}\n\n{body}";
         }
 
         UIManager.instance.ResultTextUI.text = result.Replace("\\n", "\n");
-
     }
+
 
 }
