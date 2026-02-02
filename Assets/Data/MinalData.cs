@@ -12,4 +12,7 @@ public class MinalData : ScriptableObject
 
     [SerializeField] private float _price;
     public float price { get => _price; }
+
+    [SerializeField] private float _maxFallSpeed; // 아래로 떨어지는 최대 속도(절댓값)
+    public float maxFallSpeed { get => _maxFallSpeed; }
 }

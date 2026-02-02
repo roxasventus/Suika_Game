@@ -155,6 +155,8 @@ public class GameManager : MonoBehaviour
 
     public void ResultGame()
     {
+        Time.timeScale = 0f;
+
         UIManager.instance.ResultUI.gameObject.SetActive(true);
 
         string result;

@@ -15,3 +15,4 @@ MonoBehaviour:
   _level: 4
   _name: "\uB124\uBDF8\uB77C \uD06C\uB9AC\uC2A4\uD0C8"
   _price: 1200
+  _maxFallSpeed: 8.4

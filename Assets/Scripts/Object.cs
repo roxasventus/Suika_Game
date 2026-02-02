@@ -14,6 +14,10 @@ public class Object : MonoBehaviour
     [SerializeField] private float _price;
     public float price { get => _price; }
 
+    [SerializeField] private float _maxFallSpeed;
+    public float maxFallSpeed { get => _maxFallSpeed; }
+    private Rigidbody2D rb;
+
     // 상자 안에 있느냐??
     [SerializeField] private bool _boxIn;
     public bool boxIn { 
@@ -31,6 +35,8 @@ public class Object : MonoBehaviour
         _level = _minaldata.level;
         _name = _minaldata.name;
         _price = _minaldata.price;
+        _maxFallSpeed = _minaldata.maxFallSpeed;
+        rb = gameObject.GetComponent<Rigidbody2D>();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -87,6 +93,16 @@ public class Object : MonoBehaviour
         {
             gameObject.SetActive(false);
             setLock(false);
+        }
+    }
+
+    void FixedUpdate()
+    {
+        var v = rb.linearVelocity; // Unity 6+ (구버전이면 rb.velocity)
+        if (v.y < -maxFallSpeed)
+        {
+            v.y = -maxFallSpeed;
+            rb.linearVelocity = v;
         }
     }
 }

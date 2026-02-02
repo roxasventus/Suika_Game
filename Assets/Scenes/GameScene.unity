@@ -4811,8 +4811,8 @@ MonoBehaviour:
   _player: {fileID: 1020727480}
   _maxDistance: 500
   _distance: 0
-  _time: 180
-  _clearPrice: 10000
+  _time: 120
+  _clearPrice: 15000
   _totalPrice: 0
   _exitBackground: {fileID: 100992626}
   clearText:
