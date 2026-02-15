@@ -169,7 +169,19 @@ public class GameManager : MonoBehaviour
             string body =
                 clearText[UnityEngine.Random.Range(0, clearText.Length)];
 
-            result = $"{title}\n\n{body}";
+            // ⭐ 위험근무 수당 지급
+            string envelopeName;
+            int hazardPay = GiveHazardPay(out envelopeName);
+
+            // TODO: 나중에 로그라이트 전용 재화로 분리 가능
+            _totalPrice += hazardPay;
+
+            string moneyText =
+                $"\n\n<size=120%><color=#FFD700>{envelopeName}</color></size>" +
+                $"\n위험근무 수당 +{hazardPay:N0}";
+
+            result = $"{title}\n\n{body}{moneyText}";
+            UpgradeManager.instance.addCredit(hazardPay);
         }
         else
         {
@@ -179,11 +191,86 @@ public class GameManager : MonoBehaviour
             string body =
                 failText[UnityEngine.Random.Range(0, failText.Length)];
 
-            result = $"{title}\n\n{body}";
+            // ❌ 보상 없음, 연출만
+            string envelopeName = "지급 보류 통지";
+            string moneyText;
+
+            if (isClear && totalPrice < _clearPrice)
+            {
+                moneyText =
+                    $"\n\n<size=120%><color=#AAAAAA>{envelopeName}</color></size>" +
+                    $"\n※ 실적 미달로, 수당 지급은 보류됩니다.";
+            }
+            else 
+            {
+                moneyText =
+                    $"\n\n<size=120%><color=#AAAAAA>{envelopeName}</color></size>" +
+                    $"\n※ 본 근무는 사고 처리되었습니다.";
+            }
+
+            result = $"{title}\n\n{body}{moneyText}";
         }
 
         UIManager.instance.ResultTextUI.text = result.Replace("\\n", "\n");
     }
 
+    int GiveHazardPay(out string envelopeName)
+    {
+        double excess = Math.Max(0, _totalPrice - _clearPrice);
 
+        const double rate = 0.03; // ⭐ 초과분의 3%를 수당으로 지급 (추천)
+        int reward = (int)Math.Floor(excess * rate);
+
+        // 연출용 봉투 이름(액수에 따라 등급만 보여주기)
+        if (reward <= 0)
+            envelopeName = "지급 보류 통지";
+        else if (reward < 150)
+            envelopeName = "쥐꼬리 봉투";
+        else if (reward < 300)
+            envelopeName = "기본 봉투";
+        else if (reward < 500)
+            envelopeName = "두툼 봉투";
+        else if (reward < 900)
+            envelopeName = "위험수당 특봉";
+        else
+            envelopeName = "입막음 봉투";
+
+        return reward;
+    }
+
+    /*
+    int GiveHazardPay(out string envelopeName)
+    {
+        float r = UnityEngine.Random.value; // 0.0 ~ 1.0
+        int reward;
+
+        if (r < 0.45f)
+        {
+            envelopeName = "쥐꼬리 봉투";
+            reward = 120;
+        }
+        else if (r < 0.75f) // 0.45 + 0.30
+        {
+            envelopeName = "기본 봉투";
+            reward = 180;
+        }
+        else if (r < 0.90f) // +0.15
+        {
+            envelopeName = "두툼 봉투";
+            reward = 280;
+        }
+        else if (r < 0.98f) // +0.08
+        {
+            envelopeName = "위험수당 특봉";
+            reward = 420;
+        }
+        else
+        {
+            envelopeName = "입막음 봉투";
+            reward = 900;
+        }
+
+        return reward;
+    }
+    */
 }

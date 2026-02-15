@@ -9,6 +9,8 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
 
+
+    [Header("Game")]
     [SerializeField] private Camera _main_camera;
     public Camera main_camera { get => _main_camera; }
 
@@ -42,18 +44,34 @@ public class UIManager : MonoBehaviour
 
     float blinkTimer;
 
+    [Header("Upgrade")]
+    [SerializeField] TMP_Text _creditText;   // 과열 UI 텍스트
+    public TMP_Text creditText { get => _creditText; }
+    [SerializeField] Slider[] _upgradeGuage;
+    public Slider[] upgradeGuage
+    { 
+        get => _upgradeGuage;
+    }
+
     private void Awake()
     {
         if (SceneManager.GetActiveScene().name == "GameScene")
         {
             GameManager.instance.player.GetComponent<PlayerInput>().actions.FindActionMap("UI").Enable();
         }
+
+        instance = this;
+    }
+
+    private void OnDestroy()
+    {
+        if (instance == this) instance = null;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        instance = this;
+
     }
 
     // Update is called once per frame
@@ -81,6 +99,16 @@ public class UIManager : MonoBehaviour
                 ResetOverheatUI();
             }
         }
+    }
+
+    public void refreshStatus(UpgradeManager u)
+    {
+        upgradeGuage[0].value = u.widthLevel / (float)u.upgradePrice.Length;
+        upgradeGuage[1].value = u.heightLevel / (float)u.upgradePrice.Length;
+        upgradeGuage[2].value = u.accelerateLevel / (float)u.upgradePrice.Length;
+        upgradeGuage[3].value = u.accelerateFuelLevel / (float)u.upgradePrice.Length;
+
+        creditText.text = "크레딧: " + u.credit;
     }
 
     void BlinkOverheatUI()

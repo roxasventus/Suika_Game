@@ -7,7 +7,12 @@ public class Player : MonoBehaviour
     Vector2 move;
     Rigidbody2D rigid;
 
-    [SerializeField] private float _speed = 5f;
+    [Header("box")]
+    [SerializeField] BoxResizer boxrisizer;
+    float boxWidth;
+    float boxHeight;
+
+    //[SerializeField] private float _speed = 5f;
     [Header("speed")]
     [SerializeField] float baseSpeed = 5f;
 
@@ -35,14 +40,16 @@ public class Player : MonoBehaviour
     float targetSpeed;
     float currentSpeed;
 
+    /*
     public float speed
     {
         get => _speed;
         set => _speed = value;
     }
-
+    */
     private void Awake()
     {
+
         accelerateGauge = maxAccelerateGauge;
         rigid = GetComponent<Rigidbody2D>();
         //baseSpeed = _speed; // 시작 시 기본 속도 저장
@@ -50,6 +57,22 @@ public class Player : MonoBehaviour
         // ⭐ 시작부터 기본 속도로 움직이도록 초기화
         targetSpeed = baseSpeed;
         currentSpeed = baseSpeed;
+    }
+
+    private void Start()
+    {
+        // 스탯 설정
+        //boxWidth = boxrisizer.floor.GetComponent<SpriteRenderer>().bounds.size.x * UpgradeManager.instance.widthRate;
+        //boxHeight = boxrisizer.leftWall.GetComponent<SpriteRenderer>().bounds.size.y * UpgradeManager.instance.heightRate;
+
+
+        boxWidth = boxrisizer.floor.transform.localScale.x * UpgradeManager.instance.widthRate;
+        boxHeight = boxrisizer.leftWall.transform.localScale.y * UpgradeManager.instance.heightRate;
+
+        speedUpMultiplier *= UpgradeManager.instance.accelerateRate;
+        accelerateUse *= UpgradeManager.instance.accelerateFuelRate;
+
+        boxrisizer.Resize(boxWidth, boxHeight);
     }
 
     private void Update()
@@ -151,7 +174,9 @@ public class Player : MonoBehaviour
         {
             float price = collision.GetComponent<Object>().price;
             GameManager.instance.addPrice(-price);
-            UIManager.instance.setText(UIManager.instance.priceUI, "Price : " + GameManager.instance.totalPrice);
+
+            if(UIManager.instance != null)
+                UIManager.instance.setText(UIManager.instance.priceUI, "Price : " + GameManager.instance.totalPrice);
         }
     }
 
